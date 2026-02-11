@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="FilestorageApplication" type="AmplicodeSpringBootApplication" nameIsGenerated="true">
+    <envs>
+      <env name="POSTGRES_DB" value="filestorage_db" />
+      <env name="POSTGRES_PASSWORD" value="password" />
+      <env name="POSTGRES_USER" value="postgres_user" />
+      <env name="SERVER_PORT" value="8080" />
+      <env name="FILE_STORAGE_PATH" value="./uploads" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="ru.dgorokhov.filestorage.FilestorageApplication" />
+    <module name="filestorage" />
+    <option name="profiles">
+      <list>
+        <option value="" />
+      </list>
+    </option>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
