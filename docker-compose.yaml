@@ -1,7 +1,7 @@
 services:
 
   db:
-    image: postgres:alpine
+    image: postgres:17-alpine
     container_name: filestorage-db
     ports:
       - "5432:5432"
@@ -12,7 +12,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
-      test: pg_isready -q -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       interval: 10s
       timeout: 5s
       retries: 5
