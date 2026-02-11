@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriUtils;
+import ru.dgorokhov.filestorage.dto.DeleteResponseDto;
 import ru.dgorokhov.filestorage.dto.FileMetadataDto;
 import ru.dgorokhov.filestorage.entity.FileMetadata;
 import ru.dgorokhov.filestorage.mapper.FileMetadataMapper;
@@ -61,7 +62,9 @@ public class FileController {
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Long> deleteFiles(@RequestBody List<Long> fileIds) {
+    public DeleteResponseDto deleteFiles(
+            @RequestBody List<Long> fileIds
+    ) {
         return fileStorageService.deleteFiles(fileIds);
     }
 

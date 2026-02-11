@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.dgorokhov.filestorage.dto.DeleteResponseDto;
 import ru.dgorokhov.filestorage.entity.FileMetadata;
 import ru.dgorokhov.filestorage.exception.NotFoundException;
 import ru.dgorokhov.filestorage.repository.FileMetadataRepository;
@@ -16,9 +17,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -75,22 +74,29 @@ public class FileStorageService {
                 .orElseThrow(() -> new NotFoundException("File metadata not found with id: " + fileId));
     }
 
-    public List<Long> deleteFiles(List<Long> fileIds) {
-        List<Long> res = new ArrayList<>();
+    public DeleteResponseDto deleteFiles(List<Long> fileIds) {
+        List<Long> deletedFiles = new ArrayList<>();
+        Map<Long, String> errors = new HashMap<>();
+
         List<FileMetadata> filesToDelete = fileMetadataRepository.findAllById(fileIds);
 
         for (FileMetadata file : filesToDelete) {
             Path filePath = Paths.get(fileStoragePath).resolve(file.getStoredFileName());
             try {
                 Files.deleteIfExists(filePath);
-                res.add(file.getId());
+                deletedFiles.add(file.getId());
             } catch (IOException e) {
+                errors.put(file.getId(), "Can't delete file: " + filePath);
                 log.error("Can't delete file: {}", filePath);
             }
         }
 
-        fileMetadataRepository.deleteAll(filesToDelete);
-        return res;
+        fileMetadataRepository.deleteAllById(deletedFiles);
+
+        return DeleteResponseDto.builder()
+                .deletedFiles(deletedFiles)
+                .errors(errors)
+                .build();
     }
 
 }

@@ -172,13 +172,13 @@
                 alert('Please select at least one file to delete');
                 return;
             }
-            
+
             const fileIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.id));
-            
+
             if (!confirm(`Are you sure you want to delete ${selectedCheckboxes.length} file(s)?`)) {
                 return;
             }
-            
+
             fetch('/api/files', {
                 method: 'DELETE',
                 headers: {
@@ -186,12 +186,22 @@
                 },
                 body: JSON.stringify(fileIds)
             })
-            .then(response => {
-                if (response.ok) {
-                    loadFiles(); // Refresh the file list
-                } else {
-                    throw new Error('Delete failed');
+            .then(response => response.json())
+            .then(data => {
+                let message = '';
+                if (data.deletedFiles && data.deletedFiles.length > 0) {
+                    message += `Successfully deleted ${data.deletedFiles.length} file(s): ${data.deletedFiles.join(', ')}\n`;
                 }
+                if (data.errors && Object.keys(data.errors).length > 0) {
+                    message += 'Errors occurred during deletion:\n';
+                    for (const [fileId, error] of Object.entries(data.errors)) {
+                        message += `- File ID ${fileId}: ${error}\n`;
+                    }
+                }
+                if (message) {
+                    alert(message);
+                }
+                loadFiles();
             })
             .catch(error => {
                 console.error('Delete error:', error);
